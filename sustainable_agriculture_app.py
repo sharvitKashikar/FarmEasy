@@ -64,6 +64,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+
 @st.cache_data
 def load_and_prepare_data():
     """Load and prepare the crop yield data"""
@@ -90,6 +91,7 @@ def load_and_prepare_data():
         st.error(f"Error loading data: {str(e)}")
         return None
 
+
 @st.cache_resource
 def train_model(df):
     """Train a robust yield prediction model"""
@@ -107,7 +109,6 @@ def train_model(df):
     df['Season_encoded'] = le_season.fit_transform(df['Season'])
     df['State_encoded'] = le_state.fit_transform(df['State'])
     
-    # Add encoded features
     features.extend(['Crop_encoded', 'Season_encoded', 'State_encoded', 'Crop_Year'])
     
     X = df[features]
@@ -141,60 +142,33 @@ def train_model(df):
     # Cross validation
     cv_scores = cross_val_score(rf_model, X_train_scaled, y_train, cv=5, scoring='r2')
     
-    # Create model package
-    model_package = {
+    return {
         'model': rf_model,
         'scaler': scaler,
-        'label_encoders': {
-            'Crop': le_crop,
-            'Season': le_season,
-            'State': le_state
-        },
+        'label_encoders': {'Crop': le_crop, 'Season': le_season, 'State': le_state},
         'features': features,
         'metrics': {
-            'r2': r2,
-            'mae': mae,
-            'rmse': rmse,
-            'cv_mean': cv_scores.mean(),
-            'cv_std': cv_scores.std()
+            'r2': r2, 'mae': mae, 'rmse': rmse,
+            'cv_mean': cv_scores.mean(), 'cv_std': cv_scores.std()
         },
-        'test_data': {
-            'X_test': X_test,
-            'y_test': y_test,
-            'y_pred': y_pred
-        }
+        'test_data': {'X_test': X_test, 'y_test': y_test, 'y_pred': y_pred}
     }
-    
-    return model_package
+
 
 def get_government_schemes(state, crop):
-    """Get relevant government schemes based on state and crop"""
     schemes = [
-        "🌾 **Pradhan Mantri Fasal Bima Yojana (PMFBY)** - Crop insurance scheme",
-        "💰 **PM-KISAN** - ₹6,000 annual income support to farmer families",
-        "🚜 **Sub-Mission on Agricultural Mechanization** - Subsidies on farm equipment",
-        "🌱 **National Mission for Sustainable Agriculture** - Climate-resilient farming",
-        "💧 **Pradhan Mantri Krishi Sinchayee Yojana** - Irrigation efficiency improvement"
+        "🌾 **PMFBY** - Crop insurance scheme",
+        "💰 **PM-KISAN** - ₹6,000 annual income support",
+        "🚜 **Farm Mechanization Subsidies**",
+        "🌱 **National Mission for Sustainable Agriculture**",
+        "💧 **PMKSY - Irrigation Efficiency Improvement**"
     ]
     
-    # State-specific schemes
     state_schemes = {
-        'Punjab': [
-            "🌾 **Punjab Crop Diversification Program** - Incentives to shift from rice-wheat",
-            "💧 **Free Electricity for Agriculture** - Subsidized power for farming"
-        ],
-        'Uttar Pradesh': [
-            "🌱 **UP Crop Diversification Scheme** - Support for alternative crops",
-            "🚜 **Kisan Credit Card** - Easy agricultural loans"
-        ],
-        'Maharashtra': [
-            "☔ **Maharashtra Drought Relief Package** - Support during water scarcity",
-            "🍯 **Honey Mission** - Beekeeping promotion for additional income"
-        ],
-        'West Bengal': [
-            "🌾 **Krishak Bandhu** - Financial assistance to farmers",
-            "🐟 **Blue Revolution** - Fisheries development support"
-        ]
+        'Punjab': ["🌾 Punjab Crop Diversification", "💧 Free Electricity for Agriculture"],
+        'Uttar Pradesh': ["🌱 UP Crop Diversification Scheme"],
+        'Maharashtra': ["☔ Drought Relief Scheme", "🍯 Honey Mission"],
+        'West Bengal': ["🌾 Krishak Bandhu Scheme"]
     }
     
     if state in state_schemes:
@@ -202,106 +176,63 @@ def get_government_schemes(state, crop):
     
     return schemes
 
+
 def get_yield_improvement_tips(prediction, crop, inputs):
-    """Generate personalized tips to improve yield"""
     tips = []
-    
-    # General tips based on prediction level
     if prediction < 2:
-        tips.append("🚨 **Low Yield Alert**: Consider soil testing and nutrient management")
-        tips.append("💡 **Immediate Action**: Check soil pH and organic matter content")
+        tips.append("🚨 Low Yield: Improve soil nutrition & organic content")
     elif prediction < 5:
-        tips.append("📈 **Moderate Yield**: Good potential for improvement with optimization")
+        tips.append("📈 Moderate Yield: Good potential to improve")
     else:
-        tips.append("🌟 **Excellent Yield**: Maintain current practices and consider value addition")
+        tips.append("🌟 Excellent Yield: Maintain current practices")
     
-    # Fertilizer recommendations
     fert_per_area = inputs['Fertilizer_per_Area']
     if fert_per_area < 20:
-        tips.append("🌱 **Increase Fertilizer**: Consider 20-25% increase in balanced NPK fertilizers")
-        tips.append("🧪 **Soil Testing**: Get soil tested for precise nutrient requirements")
+        tips.append("🌱 Increase fertilizer by 20-25%")
     elif fert_per_area > 100:
-        tips.append("⚠️ **Reduce Fertilizer**: Over-fertilization detected. Reduce by 15-20%")
-        tips.append("🌿 **Organic Matter**: Add compost to improve soil health")
-    
-    # Water management
-    if inputs['Annual_Rainfall'] < 600:
-        tips.append("💧 **Water Management**: Install drip irrigation for water efficiency")
-        tips.append("🌧️ **Rainwater Harvesting**: Collect and store rainwater for dry periods")
-    elif inputs['Annual_Rainfall'] > 2000:
-        tips.append("🌊 **Drainage**: Ensure proper drainage to prevent waterlogging")
-    
-    # Sustainability tips
-    tips.extend([
-        "🌱 **Cover Crops**: Plant legumes during off-season to improve soil nitrogen",
-        "🦋 **Biodiversity**: Maintain field borders with native plants for beneficial insects",
-        "📊 **Record Keeping**: Maintain detailed farm records for better decision making",
-        "🤝 **Farmer Groups**: Join local FPOs for better input procurement and marketing"
-    ])
+        tips.append("⚠️ Reduce fertilizer use by 15%")
     
     return tips
 
+
 def create_yield_comparison_chart(prediction, crop):
-    """Create comparison chart with regional averages"""
-    
-    # Sample regional data
     regional_data = {
         'Rice': {'Punjab': 6.2, 'West Bengal': 5.8, 'National': 4.2},
-        'Wheat': {'Punjab': 5.1, 'Uttar Pradesh': 3.2, 'National': 3.5},
-        'Cotton': {'Gujarat': 2.1, 'Maharashtra': 1.8, 'National': 1.9},
-        'Sugarcane': {'Maharashtra': 78, 'Uttar Pradesh': 65, 'National': 70}
+        'Wheat': {'Punjab': 5.1, 'UP': 3.2, 'National': 3.5}
     }
     
-    if crop in regional_data:
-        data = regional_data[crop]
-        regions = list(data.keys())
-        yields = list(data.values())
-        
-        # Add user's prediction
-        regions.append('Your Prediction')
-        yields.append(prediction)
-        
-        colors = ['lightblue'] * (len(regions)-1) + ['red']
-        
-        fig = px.bar(x=regions, y=yields, title=f'{crop} Yield Comparison (tonnes/ha)',
-                    color=regions, color_discrete_sequence=colors)
-        fig.update_layout(showlegend=False, height=400)
-        return fig
+    if crop not in regional_data:
+        return None
     
-    return None
-
-def create_feature_impact_chart(model_package):
-    """Create chart showing impact of different factors on yield"""
+    data = regional_data[crop]
+    regions = list(data.keys()) + ['Your Farm']
+    values = list(data.values()) + [prediction]
     
-    model = model_package['model']
-    features = model_package['features']
-    
-    # Get feature importances
-    importances = model.feature_importances_
-    feature_names = [f.replace('_', ' ').title() for f in features]
-    
-    fig = px.bar(x=importances, y=feature_names, orientation='h',
-                title='Factors Affecting Crop Yield (Feature Importance)',
-                labels={'x': 'Importance Score', 'y': 'Factors'})
-    fig.update_layout(height=500)
-    
+    fig = px.bar(x=regions, y=values, title=f"{crop} Yield Comparison")
     return fig
 
+
+def create_feature_impact_chart(model_package):
+    importances = model_package['model'].feature_importances_
+    features = [f.replace('_', ' ').title() for f in model_package['features']]
+    
+    fig = px.bar(x=importances, y=features, orientation='h',
+                title='Feature Importance')
+    return fig
+
+
 def main():
-    # Header
     st.markdown("""
     <div class="main-header">
         <h1>🌱 Sustainable Agriculture Yield Predictor</h1>
-        <p>AI-Powered Crop Yield Prediction with Government Schemes & Improvement Tips</p>
+        <p>AI-powered crop yield prediction with insights</p>
     </div>
     """, unsafe_allow_html=True)
     
-    # Load data
     df = load_and_prepare_data()
     if df is None:
         return
     
-    # Sidebar navigation
     st.sidebar.title("🧭 Navigation")
     page = st.sidebar.selectbox("Choose a page", [
         "🔮 Yield Prediction", 
@@ -316,36 +247,33 @@ def main():
     elif page == "📈 Analytics Dashboard":
         analytics_page(df)
 
+
 def prediction_page(df):
     st.header("🔮 Crop Yield Prediction")
     
-    # Train model
-    with st.spinner("Training AI model..."):
+    with st.spinner("Training model..."):
         model_package = train_model(df)
     
-    st.success(f"✅ Model trained! Accuracy: {model_package['metrics']['r2']:.3f} (R² Score)")
+    st.success(f"Model Ready! R²: {model_package['metrics']['r2']:.3f}")
     
-    # Input form
     col1, col2 = st.columns(2)
     
     with col1:
-        crop = st.selectbox("Select Crop", sorted(df['Crop'].unique()))
-        season = st.selectbox("Select Season", sorted(df['Season'].unique()))
-        state = st.selectbox("Select State", sorted(df['State'].unique()))
-        crop_year = st.number_input("Crop Year", min_value=1997, max_value=2030, value=2024)
+        crop = st.selectbox("Crop", sorted(df["Crop"].unique()))
+        season = st.selectbox("Season", sorted(df["Season"].unique()))
+        state = st.selectbox("State", sorted(df["State"].unique()))
+        crop_year = st.number_input("Crop Year", 1997, 2030, 2024)
     
     with col2:
-        area = st.number_input("Area (hectares)", min_value=1.0, value=100.0, step=10.0)
-        annual_rainfall = st.number_input("Annual Rainfall (mm)", min_value=0.0, value=800.0, step=50.0)
-        fertilizer = st.number_input("Fertilizer Used (kg)", min_value=0.0, value=5000.0, step=100.0)
-        pesticide = st.number_input("Pesticide Used (kg)", min_value=0.0, value=50.0, step=5.0)
+        area = st.number_input("Area (ha)", 1.0, value=100.0)
+        rainfall = st.number_input("Rainfall (mm)", 0.0, value=800.0)
+        fertilizer = st.number_input("Fertilizer (kg)", 0.0, value=5000.0)
+        pesticide = st.number_input("Pesticide (kg)", 0.0, value=50.0)
     
-    if st.button("🎯 Predict Yield", type="primary"):
-        
-        # Prepare input data
+    if st.button("🎯 Predict Yield"):
         input_data = {
             'Area': area,
-            'Annual_Rainfall': annual_rainfall,
+            'Annual_Rainfall': rainfall,
             'Fertilizer': fertilizer,
             'Pesticide': pesticide,
             'Fertilizer_per_Area': fertilizer / area,
@@ -356,201 +284,90 @@ def prediction_page(df):
             'Crop_Year': crop_year
         }
         
-        # Create DataFrame and scale
         input_df = pd.DataFrame([input_data])
-        input_scaled = model_package['scaler'].transform(input_df[model_package['features']])
+        scaled_data = model_package['scaler'].transform(input_df[model_package['features']])
+        prediction = model_package['model'].predict(scaled_data)[0]
         
-        # Make prediction
-        prediction = model_package['model'].predict(input_scaled)[0]
-        prediction = max(0, prediction)  # Ensure non-negative
-        
-        # Display prediction
         st.markdown(f"""
-        <div class="prediction-box">
+        <div class='prediction-box'>
             <h2>🎯 Predicted Yield</h2>
-            <h1>{prediction:.2f} tonnes per hectare</h1>
+            <h1>{prediction:.2f} tonnes/ha</h1>
             <p>Total Production: {prediction * area:.2f} tonnes</p>
         </div>
         """, unsafe_allow_html=True)
         
-        # Create tabs for different information
-        tab1, tab2, tab3, tab4 = st.tabs(["📊 Analysis", "🏛️ Government Schemes", "💡 Improvement Tips", "📈 Comparisons"])
+        
+        # ============================
+        # ✅ NEW ADDITION — DOWNLOAD REPORT
+        # ============================
+        report = f"""
+Crop Yield Prediction Report
+----------------------------
+
+Crop: {crop}
+State: {state}
+Season: {season}
+Year: {crop_year}
+
+Predicted Yield: {prediction:.2f} tonnes per hectare
+Total Production: {prediction * area:.2f} tonnes
+
+Inputs Used:
+- Area: {area} ha
+- Rainfall: {rainfall} mm
+- Fertilizer: {fertilizer} kg
+- Pesticide: {pesticide} kg
+
+Model Accuracy (R²): {model_package['metrics']['r2']:.3f}
+"""
+
+        st.download_button(
+            label="📥 Download Prediction Report",
+            data=report,
+            file_name="yield_prediction_report.txt",
+            mime="text/plain"
+        )
+        # ============================
+
+        
+        tab1, tab2, tab3, tab4 = st.tabs(["📊 Analysis", "🏛️ Schemes", "💡 Tips", "📈 Comparisons"])
         
         with tab1:
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                # Metrics using Streamlit native components
-                st.subheader("📊 Production Metrics")
-                
-                total_production = prediction * area
-                efficiency = (prediction / (fertilizer/area + 1e-6)) * 1000 if area > 0 else 0
-                sustainability_score = min(100, max(0, 100 - abs(fertilizer/area - 50)))
-                
-                # Use Streamlit metrics for better visibility
-                st.metric(
-                    label="🌾 Total Production", 
-                    value=f"{total_production:.2f} tonnes",
-                    help="Total expected production from your farm"
-                )
-                
-                st.metric(
-                    label="⚡ Efficiency Score", 
-                    value=f"{efficiency:.2f}",
-                    help="Yield per unit of fertilizer used (higher is better)"
-                )
-                
-                st.metric(
-                    label="🌱 Sustainability Score", 
-                    value=f"{sustainability_score:.1f}/100",
-                    help="Environmental sustainability based on input usage"
-                )
-                
-                # Additional info
-                st.info(f"""
-                **Model Used:** Random Forest Regressor
-                **Accuracy:** {model_package['metrics']['r2']:.1%} R² Score
-                **Features:** {len(model_package['features'])} input factors
-                """)
-            
-            with col2:
-                # Feature impact chart
-                fig_impact = create_feature_impact_chart(model_package)
-                st.plotly_chart(fig_impact, use_container_width=True)
+            st.metric("🌾 Total Production", f"{prediction * area:.2f} tonnes")
+            fig = create_feature_impact_chart(model_package)
+            st.plotly_chart(fig, use_container_width=True)
         
         with tab2:
-            # Government schemes
             schemes = get_government_schemes(state, crop)
-            st.markdown("### 🏛️ Relevant Government Schemes")
-            
-            for scheme in schemes:
-                st.markdown(f"""
-                <div class="scheme-box">
-                    {scheme}
-                </div>
-                """, unsafe_allow_html=True)
+            for s in schemes:
+                st.markdown(f"<div class='scheme-box'>{s}</div>", unsafe_allow_html=True)
         
         with tab3:
-            # Improvement tips
             tips = get_yield_improvement_tips(prediction, crop, input_data)
-            st.markdown("### 💡 Personalized Improvement Tips")
-            
-            for tip in tips:
-                st.markdown(f"""
-                <div class="tip-box">
-                    {tip}
-                </div>
-                """, unsafe_allow_html=True)
+            for t in tips:
+                st.markdown(f"<div class='tip-box'>{t}</div>", unsafe_allow_html=True)
         
         with tab4:
-            # Yield comparison
-            fig_comparison = create_yield_comparison_chart(prediction, crop)
-            if fig_comparison:
-                st.plotly_chart(fig_comparison, use_container_width=True)
-            
-            # Historical trend (simulated)
-            years = list(range(2019, 2025))
-            trend_yields = [prediction * (0.95 + 0.02 * i) for i in range(len(years))]
-            
-            fig_trend = px.line(x=years, y=trend_yields, 
-                              title=f'Projected {crop} Yield Trend',
-                              labels={'x': 'Year', 'y': 'Yield (tonnes/ha)'})
-            st.plotly_chart(fig_trend, use_container_width=True)
+            fig2 = create_yield_comparison_chart(prediction, crop)
+            if fig2:
+                st.plotly_chart(fig2, use_container_width=True)
+
 
 def model_performance_page(df):
-    st.header("📊 Model Performance Analysis")
+    st.header("📊 Model Performance")
+    mp = train_model(df)
     
-    # Train model
-    model_package = train_model(df)
-    metrics = model_package['metrics']
-    test_data = model_package['test_data']
-    
-    # Display metrics
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.metric("🎯 R² Score", f"{metrics['r2']:.3f}")
-    with col2:
-        st.metric("📊 MAE", f"{metrics['mae']:.3f}")
-    with col3:
-        st.metric("📈 RMSE", f"{metrics['rmse']:.3f}")
-    with col4:
-        st.metric("🔄 CV Score", f"{metrics['cv_mean']:.3f} ± {metrics['cv_std']:.3f}")
-    
-    # Prediction vs Actual plot
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        fig_scatter = px.scatter(
-            x=test_data['y_test'], 
-            y=test_data['y_pred'],
-            title='Actual vs Predicted Yield',
-            labels={'x': 'Actual Yield (tonnes/ha)', 'y': 'Predicted Yield (tonnes/ha)'}
-        )
-        
-        # Add perfect prediction line
-        min_val = min(test_data['y_test'].min(), test_data['y_pred'].min())
-        max_val = max(test_data['y_test'].max(), test_data['y_pred'].max())
-        fig_scatter.add_trace(go.Scatter(
-            x=[min_val, max_val], y=[min_val, max_val],
-            mode='lines', name='Perfect Prediction',
-            line=dict(color='red', dash='dash')
-        ))
-        
-        st.plotly_chart(fig_scatter, use_container_width=True)
-    
-    with col2:
-        # Residual plot
-        residuals = test_data['y_test'] - test_data['y_pred']
-        fig_residual = px.scatter(
-            x=test_data['y_pred'], y=residuals,
-            title='Residual Plot',
-            labels={'x': 'Predicted Yield', 'y': 'Residuals'}
-        )
-        fig_residual.add_hline(y=0, line_dash="dash", line_color="red")
-        st.plotly_chart(fig_residual, use_container_width=True)
+    st.metric("R² Score", f"{mp['metrics']['r2']:.3f}")
+    st.metric("MAE", f"{mp['metrics']['mae']:.3f}")
+    st.metric("RMSE", f"{mp['metrics']['rmse']:.3f}")
+
 
 def analytics_page(df):
-    st.header("📈 Agricultural Analytics Dashboard")
+    st.header("📈 Analytics Dashboard")
     
-    # Key statistics
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.metric("🌾 Total Crops", len(df['Crop'].unique()))
-    with col2:
-        st.metric("🗺️ States Covered", len(df['State'].unique()))
-    with col3:
-        st.metric("📊 Average Yield", f"{df['Yield'].mean():.2f} t/ha")
-    with col4:
-        st.metric("📈 Data Points", len(df))
-    
-    # Visualizations
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        # Yield by crop
-        crop_yield = df.groupby('Crop')['Yield'].mean().sort_values(ascending=False).head(10)
-        fig_crop = px.bar(x=crop_yield.index, y=crop_yield.values,
-                         title='Average Yield by Crop (Top 10)')
-        st.plotly_chart(fig_crop, use_container_width=True)
-    
-    with col2:
-        # Yield by state
-        state_yield = df.groupby('State')['Yield'].mean().sort_values(ascending=False).head(10)
-        fig_state = px.bar(x=state_yield.index, y=state_yield.values,
-                          title='Average Yield by State (Top 10)')
-        fig_state.update_xaxes(tickangle=45)
-        st.plotly_chart(fig_state, use_container_width=True)
-    
-    # Correlation analysis
-    st.subheader("🔗 Factor Correlation Analysis")
-    numeric_cols = ['Yield', 'Area', 'Production', 'Annual_Rainfall', 'Fertilizer', 'Pesticide']
-    corr_matrix = df[numeric_cols].corr()
-    
-    fig_corr = px.imshow(corr_matrix, text_auto=True, aspect="auto",
-                        title="Correlation Matrix of Agricultural Factors")
-    st.plotly_chart(fig_corr, use_container_width=True)
+    st.metric("🌾 Total Crops", len(df["Crop"].unique()))
+    st.metric("🗺️ States", len(df["State"].unique()))
+
 
 if __name__ == "__main__":
-    main() 
+    main()
