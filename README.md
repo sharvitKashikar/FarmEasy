@@ -1,208 +1,127 @@
 # 🌱 Sustainable Agriculture Yield Predictor
 
-An AI-powered web application built with Streamlit for predicting crop yields using machine learning techniques. This application helps farmers and agricultural professionals make data-driven decisions for sustainable farming practices.
+## Overview
 
-## 🚀 Features
+This project presents an AI-powered Crop Yield Prediction application built with Streamlit, enabling farmers and agricultural stakeholders to predict crop yields, gain insights into influencing factors, and access personalized recommendations for sustainable farming practices. The application covers comprehensive features including data overview, advanced model training, interactive yield prediction, and detailed analytics.
 
-- **📊 Data Overview**: Comprehensive analysis of the crop yield dataset
-- **🤖 Model Training**: Train and compare multiple ML models (Random Forest, Gradient Boosting, Linear Regression)
-- **🔮 Yield Prediction**: Real-time crop yield prediction based on user inputs
-- **📈 Advanced Analytics**: Interactive visualizations and insights
-- **🎯 Feature Importance**: Understanding which factors most influence crop yield
-- **📱 Responsive Design**: Modern, user-friendly interface
+## Features
 
-## 📋 Dataset Features
+*   **Interactive Dashboard:** User-friendly interface for seamless navigation.
+*   **Data Overview:** Visualize and understand the underlying agricultural dataset.
+*   **Advanced Model Training:** Train and evaluate powerful machine learning models (e.g., Random Forest, XGBoost) to predict crop yields based on various environmental and agricultural factors.
+*   **Yield Prediction:** Input specific conditions (e.g., N, P, K values, pH, rainfall, temperature, area, crop, state, season) to get a precise yield prediction.
+*   **Personalized Insights:**
+    *   **Feature Impact Analysis:** Understand which factors most influence the predicted yield.
+    *   **Relevant Government Schemes:** Access information on government initiatives applicable to the selected crop and state.
+    *   **Yield Improvement Tips:** Get tailored advice for maximizing crop output and improving sustainability.
+*   **Analytics:** Explore historical trends and compare predicted yields.
 
-The application uses a comprehensive crop yield dataset with the following features:
-- **Crop**: Type of crop (Rice, Wheat, Maize, etc.)
-- **Crop_Year**: Year of cultivation
-- **Season**: Growing season (Kharif, Rabi, Summer, Whole Year)
-- **State**: Indian state where crop is grown
-- **Area**: Area under cultivation (hectares)
-- **Production**: Total production
-- **Annual_Rainfall**: Annual rainfall (mm)
-- **Fertilizer**: Fertilizer usage (kg)
-- **Pesticide**: Pesticide usage (kg)
-- **Yield**: Crop yield (target variable)
+## Getting Started
 
-## 🛠️ Installation & Setup
+Follow these instructions to set up and run the Sustainable Agriculture Yield Predictor application.
 
 ### Prerequisites
-- Python 3.8 or higher
-- pip package manager
 
-### Step 1: Clone or Download
+Make sure you have Python 3.8+ installed on your system. It's recommended to use a virtual environment.
+
+### 1. Clone the repository
+
 ```bash
-# If using git
-git clone <your-repository-url>
-cd edunet-project
-
-# Or download and extract the project files
+git clone https://github.com/sharvitKashikar/FarmEasy.git
+cd FarmEasy
 ```
 
-### Step 2: Install Dependencies
+### 2. Set up a virtual environment (Recommended)
+
 ```bash
-pip install -r requirements.txt
+python -m venv venv
+source venv/bin/activate  # On Linux/macOS
+venv\Scripts\activate   # On Windows
 ```
 
-### Step 3: Verify Dataset
-Ensure `crop_yield.csv` is in the project directory.
+### 3. Install Required Libraries
 
-### Step 4: Run the Application
+First, install the basic dependencies:
+
 ```bash
-streamlit run app.py
+pip install streamlit pandas numpy plotly scikit-learn
 ```
 
-The application will open in your default web browser at `http://localhost:8501`
+For enhanced model training capabilities, including Gradient Boosting models like XGBoost, LightGBM, and hyperparameter optimization, you can run the `setup_ultra.py` script:
 
-## 🎯 How to Use
-
-### 1. Data Overview
-- Navigate to "📊 Data Overview" to explore the dataset
-- View statistics, sample data, and visualizations
-- Understand the distribution of crops, states, and yield patterns
-
-### 2. Train Models
-- Go to "🤖 Model Training" page
-- Click "🚀 Train Models" to train multiple ML models
-- Compare model performance metrics (R² Score, MSE, MAE, RMSE)
-- View feature importance for the best performing model
-
-### 3. Make Predictions
-- Navigate to "🔮 Yield Prediction"
-- Select crop parameters:
-  - Crop type
-  - Season
-  - State
-  - Year
-  - Area (hectares)
-  - Annual rainfall (mm)
-  - Fertilizer usage (kg)
-  - Pesticide usage (kg)
-- Click "🎯 Predict Yield" to get the prediction
-- View predicted yield and estimated total production
-
-### 4. Analytics
-- Explore "📈 Analytics" for advanced insights
-- View yield trends over time
-- State-wise performance analysis
-- Correlation analysis between variables
-- Seasonal yield patterns
-
-## 🧠 Machine Learning Models
-
-The application implements and compares three ML models:
-
-1. **Random Forest Regressor**: Ensemble method using multiple decision trees
-2. **Gradient Boosting Regressor**: Sequential ensemble learning
-3. **Linear Regression**: Linear relationship modeling
-
-The best performing model (based on R² score) is automatically selected for predictions.
-
-## 📊 Key Metrics
-
-- **R² Score**: Proportion of variance explained by the model
-- **MSE**: Mean Squared Error
-- **MAE**: Mean Absolute Error
-- **RMSE**: Root Mean Squared Error
-
-## 🎨 Application Structure
-
-```
-edunet-project/
-├── app.py                 # Main Streamlit application
-├── crop_yield.csv         # Dataset
-├── requirements.txt       # Python dependencies
-├── README.md             # This file
-└── crop_yield_model.pkl   # Trained model (generated after training)
-```
-
-## 🔧 Customization
-
-### Adding New Features
-- Modify the `feature_columns` list in the `preprocess_data()` function
-- Update the input form in `prediction_page()` accordingly
-
-### Adding New Models
-- Add new models to the `models` dictionary in `train_models()` function
-- Ensure proper preprocessing for each model type
-
-### Styling
-- Modify the CSS in the `st.markdown()` section for custom styling
-- Update colors, fonts, and layout as needed
-
-## 🚀 Deployment Options
-
-### Local Development
 ```bash
-streamlit run app.py
+python "not in use/setup_ultra.py"
 ```
 
-### Streamlit Cloud
-1. Push code to GitHub repository
-2. Connect to Streamlit Cloud
-3. Deploy directly from GitHub
+This script will install:
+*   `xgboost`
+*   `lightgbm`
+*   `optuna` (for hyperparameter optimization)
+*   `catboost`
 
-### Docker (Optional)
-```dockerfile
-FROM python:3.9-slim
+### 4. Prepare Your Data
 
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+The application expects a CSV file named `crop_yield.csv` in the root directory. This dataset should contain features relevant for crop yield prediction. Ensure it has columns such as `N`, `P`, `K`, `pH`, `rainfall`, `temperature`, `area_in_hectares`, `crop`, `state`, `season`, and `yield_in_tonnes`.
 
-COPY . .
-EXPOSE 8501
+***Example `crop_yield.csv` structure:***
 
-CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+```csv
+N,P,K,pH,rainfall,temperature,area_in_hectares,crop,state,season,yield_in_tonnes
+90,42,43,6.5,200,20.8,5,rice,Maharashtra,Monsoon,8.5
+85,58,41,6.2,210,21.5,7,rice,Maharashtra,Monsoon,8.9
+... (more data)
 ```
 
-## 📈 Performance Tips
+### 5. Run the Application
 
-- **Data Caching**: The app uses `@st.cache_data` for efficient data loading
-- **Model Caching**: Trained models are cached using `@st.cache_resource`
-- **Large Datasets**: For very large datasets, consider data sampling or pagination
+Once all dependencies are installed and your `crop_yield.csv` is in place, run the Streamlit application:
 
-## 🐛 Troubleshooting
+```bash
+streamlit run sustainable_agriculture_app.py
+```
 
-### Common Issues
+Your browser will automatically open to the Streamlit application, usually at `http://localhost:8501`.
 
-1. **Module Import Errors**
-   ```bash
-   pip install --upgrade -r requirements.txt
-   ```
+## Usage
 
-2. **Data Loading Issues**
-   - Ensure `crop_yield.csv` is in the correct directory
-   - Check file permissions and encoding
+The application is divided into several sections accessible via the sidebar navigation:
 
-3. **Model Training Errors**
-   - Verify data preprocessing steps
-   - Check for missing values or invalid data types
+### 📊 Data Overview
 
-4. **Prediction Errors**
-   - Ensure model is trained before making predictions
-   - Verify input values are within valid ranges
+This section provides an interactive look at the dataset used for training, including:
+*   Descriptive statistics of numerical features.
+*   Distribution plots for key variables.
+*   Correlation matrix to understand relationships between features.
 
-## 🤝 Contributing
+### 🤖 Advanced Model Training
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+Here, you can:
+*   Select features for model training.
+*   Choose a regression model (e.g., Random Forest).
+*   Train the model and view its performance metrics (R², MSE, MAE).
+*   Optionally, enable cross-validation for more robust evaluation.
 
-## 📧 Support
+### 🔮 Yield Prediction
 
-For issues or questions:
-- Check the troubleshooting section
-- Review the code comments
-- Create an issue in the repository
+This is the core prediction interface. Input the following parameters:
+*   **Soil Nutrients:** Nitrogen (N), Phosphorus (P), Potassium (K).
+*   **Soil pH:** Acidity/Alkalinity of the soil.
+*   **Environmental Factors:** Rainfall, Temperature.
+*   **Land Use:** Area in Hectares.
+*   **Crop Details:** Select the `Crop`, `State`, and `Season`.
 
-## 📄 License
+After inputting, click 'Predict Yield' to get:
+*   **Predicted Yield:** The estimated yield in tonnes per hectare.
+*   **Feature Importance/Impact:** A breakdown of which input features contributed most to the prediction.
+*   **Relevant Government Schemes:** Information on governmental support programs.
+*   **Personalized Improvement Tips:** Advice tailored to increase your yield.
+*   **Yield Comparison:** Compare your predicted yield with average yields.
+*   **Projected Trend:** A simulated historical trend for the predicted crop.
 
-This project is open source and available under the MIT License.
+### 📈 Analytics
 
----
+Explore different analytical views and visualizations related to crop yields and influencing factors.
 
-**Built with ❤️ for sustainable agriculture and data-driven farming decisions.** 
+## Contributing
+
+Contributions are welcome! Please feel free to fork the repository, make changes, and submit pull requests.
