@@ -1,0 +1,107 @@
+# AI-based Crop Recommendation System
+
+This document provides a detailed guide to the AI-based Crop Recommendation System implemented in FarmEasy. This system utilizes machine learning to suggest the most suitable crops for cultivation based on various environmental and soil parameters.
+
+## Table of Contents
+1. [Overview](#overview)
+2. [Features](#features)
+3. [Setup and Installation](#setup-and-installation)
+4. [Usage](#usage)
+5. [Input Parameters](#input-parameters)
+6. [Output and Interpretation](#output-and-interpretation)
+7. [Model Details](#model-details)
+8. [Feature Importance](#feature-importance)
+
+## 1. Overview
+
+The AI-based Crop Recommendation System is a Streamlit application designed to assist farmers. By inputting specific environmental conditions and soil nutrient levels, the system predicts and recommends the most appropriate crop to grow, aiming to maximize yield and efficiency. The underlying model is a Random Forest Classifier trained on a diverse dataset.
+
+## 2. Features
+- **Interactive UI**: User-friendly interface built with Streamlit for easy input and result visualization.
+- **Real-time Recommendations**: Get immediate crop suggestions based on your inputs.
+- **Comprehensive Input**: Considers Nitrogen (N), Phosphorus (P), Potassium (K), temperature, humidity, pH, and rainfall.
+- **Feature Importance Visualization**: Understand the impact of each input parameter on the recommendation.
+- **Model Training Script**: Includes a script to train and evaluate the Random Forest model.
+
+## 3. Setup and Installation
+
+To run the Crop Recommendation System, you need to have Python installed. It's recommended to use a virtual environment.
+
+1. **Clone the repository (if you haven't already):**
+   ```bash
+   git clone https://github.com/sharvitKashikar/FarmEasy.git
+   cd FarmEasy
+   ```
+
+2. **Navigate to the `AI_Crop_Recommendation` directory:**
+   ```bash
+   cd AI_Crop_Recommendation
+   ```
+
+3. **Install the required Python packages:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+   The `requirements.txt` file should contain:
+   ```
+   streamlit
+   pandas
+   scikit-learn
+   seaborn
+   matplotlib
+   ```
+
+## 4. Usage
+
+Once the setup is complete, you can run the Streamlit application:
+
+1. **Ensure you are in the `AI_Crop_Recommendation` directory.**
+2. **Run the Streamlit application:**
+   ```bash
+   streamlit run app.py
+   ```
+3. **Open your web browser** and navigate to the local URL provided by Streamlit (usually `http://localhost:8501`).
+
+### Running the Model Training (Optional)
+
+If you wish to retrain the model or understand the training process:
+
+1. **Ensure you have the `Crop_Recommendation.csv` dataset** in the `AI_Crop_Recommendation` directory.
+2. **Run the training script:**
+   ```bash
+   python crop_recommendation_model.py
+   ```
+   This script will train the model, save it as `cr_model.pkl`, and print evaluation metrics.
+
+## 5. Input Parameters
+
+When using the Streamlit application, you will be prompted to enter the following parameters:
+
+- **Nitrogen (N)**: Level of Nitrogen in the soil (e.g., 60-120 ppm).
+- **Phosphorus (P)**: Level of Phosphorus in the soil (e.g., 40-80 ppm).
+- **Potassium (K)**: Level of Potassium in the soil (e.g., 30-60 ppm).
+- **Temperature**: Ambient temperature in Celsius (e.g., 20-30°C).
+- **Humidity**: Relative humidity in percentage (e.g., 60-80%).
+- **pH**: Soil pH value (e.g., 5.5-7.5).
+- **Rainfall**: Annual rainfall in millimeters (e.g., 1000-2000 mm).
+
+## 6. Output and Interpretation
+
+After entering the parameters and clicking 'Get Recommendation', the system will display:
+
+- **Recommended Crop**: The name of the crop most suitable for the entered conditions.
+- **Feature Importance Plot**: A bar chart illustrating the relative importance of each input parameter in determining the recommendation. This helps in understanding which factors had the most significant influence on the prediction.
+
+## 7. Model Details
+
+The system uses a **Random Forest Classifier** model for crop recommendation. 
+
+- **Training Data**: The model is trained on `Crop_Recommendation.csv`, a dataset containing various soil and climate conditions mapped to suitable crops.
+- **Model Persistence**: The trained model is saved as `cr_model.pkl` in the `AI_Crop_Recommendation` directory, allowing the Streamlit application to load and use it for predictions without retraining every time.
+
+## 8. Feature Importance
+
+Feature importance is computed during model training. It quantifies the contribution of each input variable (N, P, K, temperature, etc.) to the model's predictive accuracy. A higher importance score indicates that the feature plays a more significant role in determining the recommended crop. This insight can be valuable for farmers to understand their land's conditions and make better cultivation choices.
+
+The Streamlit app visualizes this using a bar plot generated by `seaborn` and `matplotlib`.

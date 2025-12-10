@@ -1,70 +1,11 @@
-# FarmEasy
+## FarmEasy: AI-based Crop Recommendation System
 
-FarmEasy is a collection of applications designed to assist farmers with various tasks, from pest detection to soil nutrient analysis.
+FarmEasy is an innovative platform leveraging AI to provide intelligent crop recommendations based on various environmental and soil parameters. This system aims to assist farmers in making informed decisions about which crops to cultivate for optimal yield and resource utilization. With an intuitive Streamlit interface, users can easily input conditions and receive tailored crop suggestions, along with insights into the factors influencing these recommendations.
 
-## Project Structure
+### Features
+- **AI-Powered Crop Recommendations**: Get suggestions for the best crops to grow based on soil nutrients, pH, rainfall, temperature, and humidity.
+- **Interactive User Interface**: A Streamlit application allows easy input of parameters and visualization of results.
+- **Model Training & Evaluation**: Includes scripts for training a Random Forest Classifier and evaluating its performance.
+- **Feature Importance**: Understand which environmental factors are most critical in crop decision-making.
 
-```
-FarmEasy/
-├── .venv/
-├── README.md
-├── requirements.txt
-├── main.py
-├── apps/
-│   ├── pest_detection_app.py
-│   ├── soil_nutrient_deficiency_detector.py
-│   └── ...
-└── models/
-    └── ...
-```
-
-## Setup and Installation
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/sharvitKashikar/FarmEasy.git
-    cd FarmEasy
-    ```
-
-2.  **Create and activate a virtual environment:**
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate  # On Windows use `.venv\Scripts\activate`
-    ```
-
-3.  **Install dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-## Available Applications
-
-FarmEasy includes several Streamlit applications. To run an application, navigate to the project root and use the `streamlit run` command.
-
-### 1. Pest Detection App
-
-This application allows users to upload images of crops and detect potential pests using a pre-trained model.
-
-**How to run:**
-
-```bash
-streamlit run apps/pest_detection_app.py
-```
-
-### 2. Soil Nutrient Deficiency Detector
-
-This application helps farmers analyze their soil's nutrient levels and provides fertilizer recommendations. Users can input soil test values (e.g., pH, Nitrogen, Phosphorus, Potassium), and the app will predict nutrient levels and suggest appropriate fertilizers based on a trained Random Forest model.
-
-**How to run:**
-
-```bash
-streamlit run apps/soil_nutrient_deficiency_detector.py
-```
-
-## Contributing
-
-We welcome contributions! Please feel free to fork the repository, make changes, and submit pull requests.
-
-## License
-
-This project is licensed under the MIT License.
+For detailed instructions on setting up and using the Crop Recommendation System, please refer to the [Crop Recommendation System Documentation](docs/crop_recommendation_system.md).
